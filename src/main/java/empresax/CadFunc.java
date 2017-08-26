@@ -10,16 +10,22 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.SwingConstants;
 import java.awt.Component;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
-public class CadFunc extends JInternalFrame {
+public class CadFunc extends JFrame {
 	private JTextField textField;
-	private JTextField textField_1;
+	private JTextField inputNome;
 	private JTextField textField_2;
 	private JTextField textField_3;
 	private JTextField textField_4;
@@ -58,9 +64,8 @@ public class CadFunc extends JInternalFrame {
 	 */
 	public CadFunc() throws Exception {
 		setResizable(true);
-		setMaximum(true);
 		setTitle("Cadastro de Funcion\u00E1rio");
-		setBounds(200, 200, 750, 500);
+		setBounds(200, 200, 1022, 500);
 		
 		JPanel painelRegistro = new JPanel();
 		
@@ -71,18 +76,19 @@ public class CadFunc extends JInternalFrame {
 		groupLayout.setHorizontalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addComponent(painelBotoes, GroupLayout.PREFERRED_SIZE, 734, GroupLayout.PREFERRED_SIZE)
-						.addComponent(painelRegistro, GroupLayout.PREFERRED_SIZE, 733, GroupLayout.PREFERRED_SIZE)
-						.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 734, GroupLayout.PREFERRED_SIZE))
+					.addComponent(painelBotoes, GroupLayout.PREFERRED_SIZE, 734, GroupLayout.PREFERRED_SIZE)
 					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+				.addComponent(painelRegistro, GroupLayout.DEFAULT_SIZE, 821, Short.MAX_VALUE)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 811, Short.MAX_VALUE)
+					.addContainerGap())
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.TRAILING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addComponent(painelRegistro, GroupLayout.PREFERRED_SIZE, 221, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE)
+					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 189, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(painelBotoes, GroupLayout.PREFERRED_SIZE, 39, GroupLayout.PREFERRED_SIZE))
 		);
@@ -116,8 +122,8 @@ public class CadFunc extends JInternalFrame {
 		
 		JLabel lblNome = new JLabel("Nome");
 		
-		textField_1 = new JTextField();
-		textField_1.setColumns(10);
+		inputNome = new JTextField();
+		inputNome.setColumns(10);
 		
 		textField_2 = new JTextField();
 		textField_2.setColumns(10);
@@ -261,7 +267,7 @@ public class CadFunc extends JInternalFrame {
 					.addContainerGap(578, Short.MAX_VALUE))
 				.addGroup(gl_painelRegistro.createSequentialGroup()
 					.addGap(59)
-					.addComponent(textField_1, GroupLayout.PREFERRED_SIZE, 348, GroupLayout.PREFERRED_SIZE)
+					.addComponent(inputNome, GroupLayout.PREFERRED_SIZE, 348, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.UNRELATED)
 					.addComponent(lblRg, GroupLayout.PREFERRED_SIZE, 14, GroupLayout.PREFERRED_SIZE)
 					.addPreferredGap(ComponentPlacement.RELATED)
@@ -282,7 +288,7 @@ public class CadFunc extends JInternalFrame {
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addGroup(gl_painelRegistro.createParallelGroup(Alignment.BASELINE)
 						.addComponent(lblNome)
-						.addComponent(textField_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(inputNome, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
 						.addComponent(lblRg)
 						.addComponent(lblCpf)
 						.addComponent(textField_3, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
@@ -325,13 +331,37 @@ public class CadFunc extends JInternalFrame {
 		);
 		painelRegistro.setLayout(gl_painelRegistro);
 		
-		JButton Salvar = new JButton("Salvar");
+		JButton salvar = new JButton("Salvar");
+		salvar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				FuncionarioDao funcionarioDao = new FuncionarioDao();
+				Funcionario funcionario = new Funcionario();
+				
+				boolean possoIncluir = true;
+				
+				if (!inputNome.getText().isEmpty()) {
+					funcionario.setNome(inputNome.getText());
+				} else {
+					possoIncluir = false;
+				}
+				
+				if (possoIncluir) {
+					funcionarioDao.inclui(funcionario);
+				} else {
+					JOptionPane.showMessageDialog(null, "Todos os campos devem ser preenchidos.");
+				}
+			}
+		});
 		
-		JButton Alterar = new JButton("Alterar");
+		JButton alterar = new JButton("Alterar");
 		
-		JButton Excluir = new JButton("Excluir");
+		JButton excluir = new JButton("Excluir");
 		
-		JButton Novo = new JButton("Novo");
+		JButton novo = new JButton("Novo");
+		novo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			}
+		});
 		
 		JButton CarregaTabela = new JButton("Carregar Tabela");
 		GroupLayout gl_painelBotoes = new GroupLayout(painelBotoes);
@@ -339,13 +369,13 @@ public class CadFunc extends JInternalFrame {
 			gl_painelBotoes.createParallelGroup(Alignment.LEADING)
 				.addGroup(gl_painelBotoes.createSequentialGroup()
 					.addGap(78)
-					.addComponent(Novo)
+					.addComponent(novo)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(Salvar)
+					.addComponent(salvar)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(Alterar)
+					.addComponent(alterar)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(Excluir)
+					.addComponent(excluir)
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(CarregaTabela)
 					.addContainerGap(77, Short.MAX_VALUE))
@@ -355,16 +385,15 @@ public class CadFunc extends JInternalFrame {
 				.addGroup(gl_painelBotoes.createSequentialGroup()
 					.addGap(8)
 					.addGroup(gl_painelBotoes.createParallelGroup(Alignment.BASELINE)
-						.addComponent(Salvar)
-						.addComponent(Alterar)
-						.addComponent(Excluir)
-						.addComponent(Novo)
+						.addComponent(salvar)
+						.addComponent(alterar)
+						.addComponent(excluir)
+						.addComponent(novo)
 						.addComponent(CarregaTabela))
 					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
 		);
-		gl_painelBotoes.linkSize(SwingConstants.HORIZONTAL, new Component[] {Salvar, Alterar, Excluir, Novo, CarregaTabela});
+		gl_painelBotoes.linkSize(SwingConstants.HORIZONTAL, new Component[] {salvar, alterar, excluir, novo, CarregaTabela});
 		painelBotoes.setLayout(gl_painelBotoes);
 		getContentPane().setLayout(groupLayout);
-
 	}
 }
